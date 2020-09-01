@@ -106,7 +106,7 @@ firebase
 <style>
 .admin-view {
   width: 100%;
-  height: 110vh;
+  height: auto;
   display: flex;
   flex-direction: row;
 }

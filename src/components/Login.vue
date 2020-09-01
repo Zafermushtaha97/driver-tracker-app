@@ -1,7 +1,8 @@
 <template>
   <section class="ui centered grid main">
     <div class="column" style="max-width:450px;">
-      <form class="ui segment large form" style="margin-top:5em;">
+      <form class="ui segment large form" style="margin-top:5em;"
+      @submit.prevent="loginButtonPressed">
 <div class="ui segment">
           <div class="field">
               <div class="ui left icon input large">
@@ -15,7 +16,7 @@
               <i class="ui icon key"></i>
             </div>
           </div>
-          <button class="ui button fluid large green" @click.prevent="loginButtonPressed">Log in</button>
+          <button class="ui button fluid large green" type="submit">Log in</button>
         </div>
         <router-link :to="{ name: 'signup' }" tag="a" class="ui button basic">Sign up</router-link>
       </form>
