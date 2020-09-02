@@ -6,12 +6,10 @@
 
 <script>
 // @ is an alias to /src
-// import MainPage from '@/components/MainPage'
 import Driver from '@/components/Driver'
 export default {
   name: 'Home',
   components: {
-    // MainPage,
     Driver
   }
 }

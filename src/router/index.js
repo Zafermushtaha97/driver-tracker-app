@@ -35,7 +35,7 @@ Vue.use(VueRouter)
   },
   {
     path:'/login',
-    name:'signin',
+    name:'login',
     component:Login,
     meta: {
       guest: true
@@ -60,7 +60,7 @@ router.beforeEach((to, from, next) => {
   firebase.auth().onAuthStateChanged(userAuth => {
     if (!userAuth && to.matched.some(record => record.meta.requiresAuth)) {
       next({
-        name: 'signin'
+        name: 'login'
       })
     } else if (userAuth) {
       if (to.matched.some(record => record.meta.guest)) {

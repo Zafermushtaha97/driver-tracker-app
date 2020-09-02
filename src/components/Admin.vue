@@ -1,28 +1,29 @@
 <template>
   <div class="admin-view">
-    <section class="left-view">
-      <div class="ui segment center aligned">
+    <section class="left-view bg-dark">
+      <div class="text-center" style="color:beige;">
         <div v-if="user">{{user.email}}</div>
         <div class="admin">Admin</div>
-        <button v-if="user" class="ui button red" @click="signOutButtonPressed">Signout</button>
+        <b-button v-if="user" variant="danger" @click="signOutButtonPressed">Signout</b-button>
       </div>
-      <div class="ui segment userslist" v-if="drivers.length >0">
-        <div class="ui divided items">
-          <div
+      <div class="mt-4" v-if="drivers.length >0">
+        <b-list-group>
+          <b-list-group-item
             class="item"
             v-for="driver in drivers"
             :key="driver.id"
           >
-            <div class="content">
-              <div class="header white-color">{{driver.email}}</div>
-              <div class="meta white-color">
+            <div>
+              <h5>{{driver.username}}</h5>
+              <h6>{{driver.email}}</h6>
+              <div>
                 Lat : {{driver.lat}}
                 <br />
                 Lng :{{driver.lng}}
               </div>
             </div>
-          </div>
-        </div>
+          </b-list-group-item>
+        </b-list-group>
       </div>
     </section>
     <section class="right-view" ref="map"></section>
@@ -79,7 +80,7 @@ firebase
            new google.maps.LatLng(driver.lat, driver.lng)
         );
         infoWindows[i].setContent(
-        `<div class="ui header">${driver.email} </div>`
+        `<div class="font-size-info">${driver.username} </div>`
      );
      infoWindows[i].open(this.map, markers[i]);
 
@@ -113,19 +114,16 @@ firebase
 .left-view {
   width: 20%;
   padding: 12px;
-  background: #16214d;
+  /* background: #16214d; */
 }
 .right-view {
   flex-grow: 1;
 }
 .admin{
-   color:#2d364c;
+  color:beige;
   font-size: 18px;
 }
-.userslist{
-  background-color: #39eafd !important;
-}
-.white-color{
-  color:#0d0735 !important;
+.font-size-info{
+  font-size: 1rem;
 }
 </style>

@@ -1,27 +1,43 @@
 <template>
-  <section class="ui centered grid main">
-    <div class="column" style="max-width:450px;">
-      <form class="ui segment large form" style="margin-top:5em;"
-      @submit.prevent="signUpButtonPressed">
-        <div class="ui segment">
-          <div class="field">
-            <div class="ui left icon input large">
-              <input type="text" placeholder="Enter your email" v-model="email" />
-              <i class="ui icon user"></i>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui left icon input large">
-              <input type="password" placeholder="Enter your password" v-model="password" />
-              <i class="ui icon key"></i>
-            </div>
-          </div>
-          <button class="ui button fluid large green" type="submit">Sign up</button>
-        </div>
-         <router-link :to="{ name: 'signin' }" tag="a" class="ui button basic">Log in</router-link>
-      </form>
+<div>
+   <div class="main">
+     <div class="mx-auto d-flex justify-content-center pt-5">
+    <b-form class="w-25 mt-4 p-3 bg-light" @submit.prevent="signUp">
+      <b-card>
+        <b-form-group>
+        <b-form-input
+          v-model="email"
+          type="email"
+          required
+          placeholder="Enter your email"
+        ></b-form-input>
+        </b-form-group>
+        <b-form-group>
+        <b-form-input
+          v-model="username"
+          type="text"
+          required
+          placeholder="Enter your username"
+        ></b-form-input>
+        </b-form-group>
+        <b-form-group>
+        <b-form-input
+          type="password"
+          v-model="password"
+          required
+          placeholder="Password"
+        ></b-form-input>
+        </b-form-group>
+         <b-button type="submit" variant="success" class=" w-100">SignUp</b-button>
+      </b-card>
+      <b-button variant="light" class="mt-2" router :to="{ name: 'login' }">
+           Log in
+         </b-button>
+    </b-form>
     </div>
-  </section>
+  </div>
+
+  </div>
 </template>
 <script>
 import firebase from 'firebase'
@@ -30,11 +46,15 @@ export default {
   data() {
     return {
       email: "",
+      username:"",
       password: "",
+       dismissSecs: 5,
+        dismissCountDown: 0,
+        showDismissibleAlert: false
     };
   },
   methods: {
-   signUpButtonPressed() {
+   signUp() {
    firebase
       .auth()
       .createUserWithEmailAndPassword(this.email, this.password)
@@ -52,19 +72,21 @@ async addUserToDB({user}) {
          .doc(user.uid)
          .set({
             email: user.email,
-            active:false
+            active:false,
+            username:this.username
          });
          this.$router.push({name: 'Home',})
       
    } catch (error) {
       console.log(error.message);
    }
-}
+},
+
   }
 };
 </script>
 
-<style>
+<style scopped>
   @import url('https://fonts.googleapis.com/css2?family=Zilla+Slab:ital@1&display=swap');
     .font-zilla{
             font-family: 'Zilla Slab', serif;

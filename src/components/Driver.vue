@@ -1,44 +1,80 @@
 <template>
   <div class="driver-view">
-    <section class="top-bar">
+    <div class="top-bar">
            <div v-if="user" class="email-driver">{{user.email}}</div>
       <div class="driver">Driver</div>
-      <button v-if="user" class="ui button red" @click="signOutButtonPressed">Signout</button>
-    </section>
+      <b-button v-if="user" variant="danger" size="md btn-text" @click="signOut">Signout</b-button>
+    </div>
 <section ref="map" class="map"></section>
 <section class="bottom-bar">
-      <div class="latLngLabel">{{lat}}, {{lng}}</div>
-      <button class="ui button green" @click="startLocationUpdates">
-        <i class="circle dot outline icon large"></i>
+      <div class="latLngLabel" style="color:beige;">{{lat}}, {{lng}}</div>
+      <b-button  variant="success" class="mx-3 btn-text" @click="startLocationUpdates">
+        <i class="far fa-play-circle"></i>
         Start Location
-      </button>
-<button class="ui button red" @click="stopLocationUpdates">
-        <i class="circle dot outline icon large"></i>
+      </b-button>
+<b-button variant="danger" class="btn-text" @click="stopLocationUpdates">
+        <i class="far fa-stop-circle"></i>
         Stop Location
-      </button>
+      </b-button>
     </section>
+    <!-- start location alert -->
+    <div class="alert-start m-3">
+      <b-alert
+      :show="dismissCountDown"
+      dismissible
+      class="alert"
+      variant="success"
+      fade
+      @dismissed="dismissCountDown=0"
+      @dismiss-count-down="dismissSecs"
+    >
+      you'r start location ...
+    </b-alert>
+    </div>
+
+    <!-- Stop location alert -->
+     <div class="alert-start m-3">
+      <b-alert
+      :show="dismissCountDownstop"
+      dismissible
+      class="alert"
+      variant="danger"
+      fade
+      @dismissed="dismissCountDownstop=0"
+      @dismiss-count-down="dismissSecs"
+    >
+      you'r Stop location ...
+    </b-alert>
+    </div>
+
   </div>
 </template>
 <script>
 import firebase from "firebase";
 export default {
+  components:{
+    
+  },
     data() {
     return {
       user: null,
-       lat:null,
-      lng:null,
-      watchPositionId:null
+       lat:"00.00",
+      lng:"00.00",
+      watchPositionId:null,
+      dismissSecs: 5,
+      dismissCountDown: 0,
+      dismissCountDownstop:0
 
     };
   },
- methods: {
-    signOutButtonPressed() {
+ methods: { 
+    signOut() {
       firebase
         .auth()
         .signOut()
         .then(() => {
           this.$router.push({
-            name: "signin"
+            name: "login"
           });
         })
         .catch(error => {
@@ -62,8 +98,9 @@ export default {
           marker.setPosition(new google.maps.LatLng(this.lat, this.lng));
           this.watchPositionId = navigator.geolocation.watchPosition(
             this.updateLocation(this.lat, this.lng)
-
-          )
+            
+          );
+          
          
 
         },
@@ -74,13 +111,22 @@ export default {
     },
     stopLocationUpdates() {
   navigator.geolocation.clearWatch(this.watchPositionId);
+  this.showAlertstop()
 },
 updateLocation(lat, lng) {
     const db = firebase.firestore();
     db.collection("users")
         .doc(this.user.uid)
         .set({ lat:lat, lng: lng, active:true }, { merge: true });
-}
+        this.showAlert()
+},
+    showAlert(){
+      this.dismissCountDown = this.dismissSecs
+    },
+    showAlertstop(){
+      this.dismissCountDownstop = this.dismissSecs
+    }
+
  },
    mounted() {
     firebase.auth().onAuthStateChanged(user => {
@@ -91,7 +137,7 @@ updateLocation(lat, lng) {
 </script>
 
 
-<style>
+<style scopped>
 .driver-view {
   display: flex;
   flex-direction: column;
@@ -120,4 +166,12 @@ updateLocation(lat, lng) {
   color:#00ad45;
   font-size: 22px;
 }
+.btn-text{
+  font-size: 1.2em;
+}
+.alert-start{
+    position: fixed;
+    right: 35%;
+    left: 35%;
+    }
 </style>
