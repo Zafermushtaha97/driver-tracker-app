@@ -6,6 +6,7 @@ import Signup from '@/components/Signup'
 import Login from '@/components/Login'
 import Driver from '@/components/Driver'
 import Admin from '@/components/Admin'
+import DriverAcc from '@/components/Driver-acc'
 Vue.use(VueRouter)
 
   const routes = [
@@ -33,6 +34,16 @@ Vue.use(VueRouter)
       requiresAuth: true
     }
   },
+  {
+    path:'/drivers/:id',
+    name:'driveracc',
+    component:DriverAcc,
+    props:true,
+    meta: {
+      guest: true
+    }
+  },
+  
   {
     path:'/login',
     name:'login',

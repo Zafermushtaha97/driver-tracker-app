@@ -1,8 +1,8 @@
 <template>
   <div class="admin-view">
-    <section class="left-view bg-dark">
-      <div class="text-center" style="color:beige;">
-        <div v-if="user">{{user.email}}</div>
+    <section class="left-view">
+      <div class="text-center">
+        <div v-if="user" class="email-admin">{{user.email}}</div>
         <div class="admin">Admin</div>
         <b-button v-if="user" variant="danger" @click="signOutButtonPressed">Signout</b-button>
       </div>
@@ -12,9 +12,13 @@
             class="item"
             v-for="driver in drivers"
             :key="driver.id"
+            style="background:#004d73;"
           >
-            <div>
-              <h5>{{driver.username}}</h5>
+            <div style="color:#dbebfa;">
+              <div class="d-flex justify-content-between">
+                <h5>{{driver.username}}</h5>
+                <b-img v-if="driver.imageurl" :src="driver.imageurl" class="w-25 mxh-70" rounded="circle"></b-img>
+                </div>
               <h6>{{driver.email}}</h6>
               <div>
                 Lat : {{driver.lat}}
@@ -119,11 +123,17 @@ firebase
 .right-view {
   flex-grow: 1;
 }
+.email-admin{
+  color:#57c52a;
+  font-size: 22px;
+}
 .admin{
-  color:beige;
   font-size: 18px;
 }
 .font-size-info{
   font-size: 1rem;
+}
+.mxh-70{
+  max-height: 70px;
 }
 </style>

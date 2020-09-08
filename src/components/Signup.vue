@@ -1,6 +1,6 @@
 <template>
 <div>
-   <div class="main">
+   <div class="main pt-3">
      <div class="mx-auto d-flex justify-content-center pt-5">
     <b-form class="w-25 mt-4 p-3 bg-light" @submit.prevent="signUp">
       <b-card>
@@ -48,9 +48,10 @@ export default {
       email: "",
       username:"",
       password: "",
-       dismissSecs: 5,
-        dismissCountDown: 0,
-        showDismissibleAlert: false
+      dismissSecs: 5,
+      dismissCountDown: 0,
+      showDismissibleAlert: false,
+    
     };
   },
   methods: {
@@ -73,7 +74,9 @@ async addUserToDB({user}) {
          .set({
             email: user.email,
             active:false,
-            username:this.username
+            username:this.username,
+            user_id:user.uid
+            
          });
          this.$router.push({name: 'Home',})
       
@@ -81,6 +84,7 @@ async addUserToDB({user}) {
       console.log(error.message);
    }
 },
+
 
   }
 };

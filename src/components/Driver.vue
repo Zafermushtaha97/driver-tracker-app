@@ -1,22 +1,49 @@
 <template>
   <div class="driver-view">
-    <div class="top-bar">
-           <div v-if="user" class="email-driver">{{user.email}}</div>
-      <div class="driver">Driver</div>
-      <b-button v-if="user" variant="danger" size="md btn-text" @click="signOut">Signout</b-button>
+    <div class="left-bar bg-white">
+      <div v-if="user">
+        <b-button  v-if="!profile.imageurl"  @click="onPickFile" variant="primary"
+        >profile picture</b-button>
+        <input type="file"  ref="fileInput" @change="onFilePicked"
+                class="d-none" accept="image/*">
+          </div>
+        <div class="w-75 mx-auto my-2" v-if="user">
+        <b-img v-if="profile.imageurl" :src="profile.imageurl" rounded="circle" alt="profile  image" 
+          class="img-thumbnail responsive-img"></b-img> 
+        </div>
+        <div>
+          <b-img :src="imageurl"></b-img>
+        </div>
+
+        <div class="driver">Driver</div>
+        <div class="name-driver" v-if="user">{{profile.username}}</div>
+        <div v-if="user" class="email-driver text-break">{{user.email}}</div>
+      <b-button v-if="user" variant="danger" size="md " class="btn-text mt-3" @click="signOut">Signout</b-button>
+      <div class="latLngLabel my-3">
+              <h5>lat:{{lat}}</h5>
+              <h5>lng:{{lng}}</h5> 
+      </div>
+      <div class="mt-5 pt-5">
+        <div >
+           <b-button v-if="!startbtn" variant="success" class="mx-3 mt-5 btn-text" @click="startLocationUpdates">
+              <i v-if="!startbtn" class="far fa-play-circle"></i>
+                Start  
+             
+        </b-button>
+        </div>
+         <div >
+           <b-button  v-if="startbtn" variant="danger" class="btn-text mx-3 mt-5" @click="stopLocationUpdates">
+          <i v-if="startbtn" class="far fa-stop-circle"></i>
+          Stop 
+          </b-button>
+         </div>
+
+         
+      </div>
     </div>
-<section ref="map" class="map"></section>
-<section class="bottom-bar">
-      <div class="latLngLabel" style="color:beige;">{{lat}}, {{lng}}</div>
-      <b-button  variant="success" class="mx-3 btn-text" @click="startLocationUpdates">
-        <i class="far fa-play-circle"></i>
-        Start Location
-      </b-button>
-<b-button variant="danger" class="btn-text" @click="stopLocationUpdates">
-        <i class="far fa-stop-circle"></i>
-        Stop Location
-      </b-button>
+    <section ref="map" class="map">
     </section>
+       
     <!-- start location alert -->
     <div class="alert-start m-3">
       <b-alert
@@ -50,7 +77,7 @@
   </div>
 </template>
 <script>
-import firebase from "firebase";
+import * as firebase from 'firebase'
 export default {
   components:{
     
@@ -60,10 +87,15 @@ export default {
       user: null,
        lat:"00.00",
       lng:"00.00",
+      map:null,
       watchPositionId:null,
       dismissSecs: 5,
       dismissCountDown: 0,
-      dismissCountDownstop:0
+      dismissCountDownstop:0,
+      startbtn:false,
+      profile:null,
+      image:null,
+      imageurl:''
 
     };
   },
@@ -97,7 +129,8 @@ export default {
           map.setCenter(new google.maps.LatLng(this.lat, this.lng)); 
           marker.setPosition(new google.maps.LatLng(this.lat, this.lng));
           this.watchPositionId = navigator.geolocation.watchPosition(
-            this.updateLocation(this.lat, this.lng)
+            this.updateLocation(this.lat, this.lng),
+            this.startbtn = true
             
           );
           
@@ -112,26 +145,81 @@ export default {
     stopLocationUpdates() {
   navigator.geolocation.clearWatch(this.watchPositionId);
   this.showAlertstop()
+  this.startbtn = false
 },
 updateLocation(lat, lng) {
     const db = firebase.firestore();
     db.collection("users")
         .doc(this.user.uid)
-        .set({ lat:lat, lng: lng, active:true }, { merge: true });
+        .set({ lat:lat, lng: lng, active:true}, { merge: true });
         this.showAlert()
 },
+
     showAlert(){
       this.dismissCountDown = this.dismissSecs
     },
     showAlertstop(){
       this.dismissCountDownstop = this.dismissSecs
-    }
-
+    },
+    onPickFile(){
+      this.$refs.fileInput.click()
+    },
+    onFilePicked (event) {
+              const file = event.target.files[0];
+              firebase.storage().ref('images/'+file.name).put(file).then(res =>{
+                res.ref.getDownloadURL().then((downloadURL) =>{
+                this.updateimageurl(downloadURL)
+                }
+                )
+              })    
+            },
+   updateimageurl(imageurl){
+    const db = firebase.firestore();
+    db.collection("users").doc(this.user.uid)
+    .set({
+      imageurl:imageurl
+    },{ merge: true })
+  },
+  async Getprofileinfo(){
+    firebase.firestore().collection('users').doc(this.user.uid).get().then(user =>{
+      this.profile = user.data()
+    })
+  },
+  displayMap(){
+      this.map = new google.maps.Map(this.$refs["map"], {
+           zoom: 15,
+           StreetViewControl:true,
+           center: new google.maps.LatLng(-23.55052,-46.633309),
+           mapTypeId: google.maps.MapTypeId.ROADMAP
+       });
+  }
  },
    mounted() {
-    firebase.auth().onAuthStateChanged(user => {
+     firebase.auth().onAuthStateChanged(user => {
       this.user = user;
+      this.Getprofileinfo()
+      this.displayMap()
+      
     });
+     
+
+      
+  //  firebase.auth().onAuthStateChanged(user =>{
+  //    this.user = user;
+  // // firebase.firestore().collection('users').doc(this.user.uid).get().then(snapshot =>{
+  // //       snapshot.forEach(doc =>{
+  // //         this.user = doc.data(),
+  // //         this.user.id= doc.id
+  // //       })
+  // //     })
+    //  firebase.firestore().collection('users').doc(this.user.uid).get().then(user =>{
+    //     this.profile = user.data()
+    //     console.log(this.profile)
+    //   })
+  //  }) 
+  }, 
+  computed:{
+
   },
 }
 </script>
@@ -140,30 +228,25 @@ updateLocation(lat, lng) {
 <style scopped>
 .driver-view {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   height: 100vh;
-  background: #333447;
+
 }
-.top-bar {
-  /* height: 100px; */
+.left-bar {
+  width: 280px;
   text-align: center;
-  background: #333447;
   padding: 3em;
+  border-right: 1px solid green;
 }
 .map {
   flex-grow: 1;
 }
-.bottom-bar {
-  height: 100px;
-  text-align: center;
-  background: #333447;
-}
+
 .driver{
-  color:#f3f3f5;
   font-size: 22px;
 }
-.email-driver{
-  color:#00ad45;
+.email-driver , .name-driver{
+  color:#57c52a;
   font-size: 22px;
 }
 .btn-text{
@@ -174,4 +257,13 @@ updateLocation(lat, lng) {
     right: 35%;
     left: 35%;
     }
+   .img-thumbnail{
+    padding: 3px;
+    background-color: #fff;
+    border:2px solid #57c52a;
+}
+.responsive-img{
+    width: 80%;
+
+}
 </style>

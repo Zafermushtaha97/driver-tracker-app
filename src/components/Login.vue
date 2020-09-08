@@ -22,7 +22,7 @@
       </form>
     </div>
   </section> -->
-   <div class="main">
+   <div class="main pt-3">
      <div class="mx-auto d-flex justify-content-center pt-5">
     <b-form class="w-25 mt-4 p-3 bg-light" @submit.prevent="login">
       <b-card>
