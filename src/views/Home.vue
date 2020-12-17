@@ -3,7 +3,6 @@
     <Driver></Driver>
     </div>
 </template>
-
 <script>
 // @ is an alias to /src
 import Driver from '@/components/Driver'

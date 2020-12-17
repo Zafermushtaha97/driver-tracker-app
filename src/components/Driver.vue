@@ -25,25 +25,21 @@
       </div>
       <div class="mt-5 pt-5">
         <div >
-           <b-button v-if="!startbtn" variant="success" class="mx-3 mt-5 btn-text" @click="startLocationUpdates">
+          <b-button v-if="!startbtn" variant="success" class="mx-3 mt-5 btn-text" @click="startLocationUpdates">
               <i v-if="!startbtn" class="far fa-play-circle"></i>
                 Start  
-             
         </b-button>
         </div>
-         <div >
-           <b-button  v-if="startbtn" variant="danger" class="btn-text mx-3 mt-5" @click="stopLocationUpdates">
+        <div >
+          <b-button  v-if="startbtn" variant="danger" class="btn-text mx-3 mt-5" @click="stopLocationUpdates">
           <i v-if="startbtn" class="far fa-stop-circle"></i>
           Stop 
           </b-button>
-         </div>
-
-         
+        </div>
       </div>
     </div>
     <section ref="map" class="map">
     </section>
-       
     <!-- start location alert -->
     <div class="alert-start m-3">
       <b-alert
@@ -60,7 +56,7 @@
     </div>
 
     <!-- Stop location alert -->
-     <div class="alert-start m-3">
+    <div class="alert-start m-3">
       <b-alert
       :show="dismissCountDownstop"
       dismissible
@@ -85,7 +81,7 @@ export default {
     data() {
     return {
       user: null,
-       lat:"00.00",
+      lat:"00.00",
       lng:"00.00",
       map:null,
       watchPositionId:null,
@@ -99,7 +95,7 @@ export default {
 
     };
   },
- methods: { 
+methods: { 
     signOut() {
       firebase
         .auth()
@@ -122,7 +118,7 @@ export default {
           var marker = new google.maps.Marker({
             map: map
             });
-       navigator.geolocation.watchPosition(
+      navigator.geolocation.watchPosition(
         position => {
           this.lat = position.coords.latitude;
           this.lng = position.coords.longitude;
@@ -133,9 +129,6 @@ export default {
             this.startbtn = true
             
           );
-          
-         
-
         },
         error => {
           console.log(error.message);
@@ -173,7 +166,7 @@ updateLocation(lat, lng) {
                 )
               })    
             },
-   updateimageurl(imageurl){
+  updateimageurl(imageurl){
     const db = firebase.firestore();
     db.collection("users").doc(this.user.uid)
     .set({
@@ -187,23 +180,20 @@ updateLocation(lat, lng) {
   },
   displayMap(){
       this.map = new google.maps.Map(this.$refs["map"], {
-           zoom: 15,
-           StreetViewControl:true,
-           center: new google.maps.LatLng(-23.55052,-46.633309),
-           mapTypeId: google.maps.MapTypeId.ROADMAP
-       });
-  }
- },
-   mounted() {
-     firebase.auth().onAuthStateChanged(user => {
+          zoom: 15,
+          StreetViewControl:true,
+          center: new google.maps.LatLng(-23.55052,-46.633309),
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+      });
+  } },
+  mounted() {
+    firebase.auth().onAuthStateChanged(user => {
       this.user = user;
       this.Getprofileinfo()
       this.displayMap()
       
     });
-     
 
-      
   //  firebase.auth().onAuthStateChanged(user =>{
   //    this.user = user;
   // // firebase.firestore().collection('users').doc(this.user.uid).get().then(snapshot =>{

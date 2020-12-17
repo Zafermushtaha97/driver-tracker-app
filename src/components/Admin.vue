@@ -53,7 +53,7 @@ export default {
       mapTypeId: google.maps.MapTypeId.ROADMAP
 });
 var markers = []
- var {docs} = await firebase
+var {docs} = await firebase
     .firestore()
     .collection("users")
     .where("active", "==", true)
@@ -62,14 +62,14 @@ var markers = []
 
     for (let i = 0; i < docs.length; i++) {
       markers.push(
-         new google.maps.Marker({
+        new google.maps.Marker({
             map: this.map
-         })
+        })
       );
       infoWindows.push(new google.maps.InfoWindow({
-     disableAutoPan: true
+    disableAutoPan: true
   }));
-   }
+  }
 firebase
       .firestore()
       .collection("users")
@@ -81,12 +81,12 @@ firebase
           var driver = snap.docs[i].data();
           this.drivers.push(driver);
           markers[i].setPosition(
-           new google.maps.LatLng(driver.lat, driver.lng)
+          new google.maps.LatLng(driver.lat, driver.lng)
         );
         infoWindows[i].setContent(
         `<div class="font-size-info">${driver.username} </div>`
-     );
-     infoWindows[i].open(this.map, markers[i]);
+    );
+    infoWindows[i].open(this.map, markers[i]);
 
         }
       });
